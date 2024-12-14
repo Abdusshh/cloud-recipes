@@ -62,6 +62,3 @@ export async function addRecipe(recipe: Recipe) {
       throw error;
     }
   }
-
-// Example usage
-getRecipes().then(recipes => console.log(recipes));
