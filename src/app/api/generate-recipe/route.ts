@@ -36,11 +36,10 @@ export async function POST(request: Request) {
     const chatSession = model.startChat({
       generationConfig,
       history: [
-  
       ],
     });
     const result = await chatSession.sendMessage(`You are an expert chef. Create a step-by-step recipe using the following ingredients: ${body.ingredients}. 
-    - Write the recipe in a clear and beginner-friendly format. 
+    - Write the recipe in a clear and beginner-friendly format, do not include any markdown format in your response. 
     - Include exact measurements and specify the sequence of actions clearly.
     - Divide the recipe into "Ingredients" and "Instructions" sections.
     - In the "Instructions" section, write numbered steps in a concise and detailed manner. For example:
@@ -53,7 +52,6 @@ export async function POST(request: Request) {
     
 
     return NextResponse.json({
-      title: "AI-Generated Recipe",
       ingredients: body.ingredients.split(",").map((i: string) => i.trim()),
       instructions: recipeResponse.split("\n"),
     });

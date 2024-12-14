@@ -1,14 +1,39 @@
 import { NextResponse } from 'next/server'
+import type { Recipe } from '@/types'
+import { addRecipe, getRecipes
+ } from '@/util/database'
 
-export async function GET() {
-  // In a real application, you would fetch this data from a database
-  const recipes = [
-    { id: '1', title: 'Spaghetti Carbonara', description: 'A classic Italian pasta dish.' },
-    { id: '2', title: 'Chicken Tikka Masala', description: 'A popular Indian curry dish.' },
-    { id: '3', title: 'Caesar Salad', description: 'A refreshing salad with a creamy dressing.' },
-    // Add more recipes as needed
-  ]
+// Handle GET and POST requests
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const query = searchParams.get('query')
 
-  return NextResponse.json(recipes)
+  const recipes : Recipe[] = await getRecipes()
+
+  let filteredRecipes = recipes
+
+  if (query) {
+    filteredRecipes = recipes.filter(recipe =>
+      recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(query.toLowerCase())) ||
+      recipe.instructions.some(instruction => instruction.toLowerCase().includes(query.toLowerCase()))
+    )
+  }
+
+  return NextResponse.json(filteredRecipes)
 }
 
+export async function POST(request: Request) {
+  const newRecipe = await request.json()
+  
+  // Validate data (basic example)
+  if (!newRecipe.ingredients || !newRecipe.instructions) {
+    return NextResponse.json({ error: 'Title and description are required.' }, { status: 400 })
+  }
+
+  console.log('New recipe:', newRecipe)
+
+  // Add the new recipe to the mock database
+  addRecipe(newRecipe)
+
+  return NextResponse.json(newRecipe, { status: 201 }) // Return the created resource
+}
