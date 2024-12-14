@@ -17,9 +17,9 @@ spec:
         image: gcr.io/cloud-recipes-444717/nextjs-app:latest # Replace with your Docker image
         ports:
         - containerPort: 3000
-        env:
-        - name: GEMINI_API_KEY
-          value: your-api-key
+        envFrom:
+        - configMapRef:
+            name: nextjs-env
 ---
 apiVersion: v1
 kind: Service
