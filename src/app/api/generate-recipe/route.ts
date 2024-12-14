@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to generate recipe. Please try again later." },
+      { error: error.message || "An error occurred while generating the recipe." },
       { status: 500 }
     );
   }
