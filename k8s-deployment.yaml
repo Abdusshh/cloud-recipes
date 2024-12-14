@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextjs-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nextjs-app
+  template:
+    metadata:
+      labels:
+        app: nextjs-app
+    spec:
+      containers:
+      - name: nextjs-container
+        image: gcr.io/cloud-recipes-444717/nextjs-app:latest # Replace with your Docker image
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "https://api.example.com"
+        - name: NEXT_PUBLIC_ANALYTICS_KEY
+          value: "your-analytics-key"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextjs-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: nextjs-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
