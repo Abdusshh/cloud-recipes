@@ -26,12 +26,12 @@ const pool = mysql.createPool({
 export async function addRecipe(recipe: Recipe) {
     const { ingredients, instructions } = recipe;
   
-    const [result] = await pool.execute(
+    const [result] = await pool.execute<mysql.ResultSetHeader>(
       'INSERT INTO recipes (ingredients, instructions) VALUES (?, ?)',
       [JSON.stringify(ingredients), JSON.stringify(instructions)]
     );
   
-    console.log('Recipe added with ID:', result.insertId);
+    console.log('Recipe added with ID:', (result as mysql.ResultSetHeader).insertId);
     return result.insertId; // Return the new recipe ID
   }
 
@@ -39,7 +39,7 @@ export async function addRecipe(recipe: Recipe) {
     try {
       const [rows] = await pool.execute('SELECT * FROM recipes');
     
-      const recipes = rows.map((row) => {
+      const recipes = (rows as mysql.RowDataPacket[]).map((row) => {
         try {
           return {
             id: row.id,
@@ -47,7 +47,7 @@ export async function addRecipe(recipe: Recipe) {
             instructions: JSON.parse(row.instructions), // Parse instructions JSON
           };
         } catch (error) {
-          console.error(`Error parsing JSON for recipe ID ${row.id}:`, error.message);
+          console.error(`Error parsing JSON for recipe ID ${row.id}:`, (error as Error).message);
           return {
             id: row.id,
             ingredients: row.ingredients, // Return raw data if parsing fails
@@ -58,7 +58,7 @@ export async function addRecipe(recipe: Recipe) {
     
       return recipes;
     } catch (error) {
-      console.error('Error fetching recipes:', error.message);
+      console.error('Error fetching recipes:', (error as Error).message);
       throw error;
     }
   }

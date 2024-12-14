@@ -56,8 +56,9 @@ export async function POST(request: Request) {
       instructions: recipeResponse.split("\n"),
     });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "An error occurred while generating the recipe.";
     return NextResponse.json(
-      { error: error.message || "An error occurred while generating the recipe." },
+      { error: errorMessage },
       { status: 500 }
     );
   }
