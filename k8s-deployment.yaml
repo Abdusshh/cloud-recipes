@@ -17,11 +17,8 @@ spec:
         image: gcr.io/cloud-recipes-444717/nextjs-app:latest # Replace with your Docker image
         ports:
         - containerPort: 3000
-        env:
-        - name: NEXT_PUBLIC_API_URL
-          value: "https://api.example.com"
-        - name: NEXT_PUBLIC_ANALYTICS_KEY
-          value: "your-analytics-key"
+        env_file:
+          - .env
 ---
 apiVersion: v1
 kind: Service
