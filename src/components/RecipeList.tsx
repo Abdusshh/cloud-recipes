@@ -1,25 +1,27 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import RecipeCard from './RecipeCard'
-
-interface Recipe {
-  id: string
-  title: string
-  description: string
-}
+import type { Recipe } from '@/types'
 
 export default function RecipeList() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams() // Get the search parameters
+  const query = searchParams.get('query') || '' // Get the 'query' parameter
 
   useEffect(() => {
     const fetchRecipes = async () => {
       setIsLoading(true)
       setError(null)
       try {
-        const response = await fetch('/api/recipes')
+        // Fetch recipes with the query parameter
+        const url = query
+          ? `/api/recipes?query=${encodeURIComponent(query)}`
+          : '/api/recipes'
+        const response = await fetch(url)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
@@ -34,7 +36,7 @@ export default function RecipeList() {
     }
 
     fetchRecipes()
-  }, [])
+  }, [query]) // Re-run whenever the query parameter changes
 
   if (isLoading) {
     return <div className="text-center">Loading recipes...</div>
@@ -56,4 +58,3 @@ export default function RecipeList() {
     </div>
   )
 }
-

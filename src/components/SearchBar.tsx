@@ -9,7 +9,10 @@ export default function SearchBar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    router.push(`/recipes?search=${encodeURIComponent(query)}`)
+    // Update the URL query without navigating
+    const params = new URLSearchParams(window.location.search)
+    params.set('query', query)
+    router.push(`/?${params.toString()}`)
   }
 
   return (
@@ -27,4 +30,3 @@ export default function SearchBar() {
     </form>
   )
 }
-
