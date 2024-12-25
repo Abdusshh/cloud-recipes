@@ -2,12 +2,7 @@
 
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-
-interface Recipe {
-  title: string
-  ingredients: string[]
-  instructions: string[]
-}
+import type { Recipe } from '@/types'
 
 export default function GenerateRecipe() {
   const [ingredients, setIngredients] = useState('')
@@ -38,6 +33,7 @@ export default function GenerateRecipe() {
         throw new Error('Failed to generate recipe.')
       }
       const data = await response.json()
+      console.log('Generated recipe:', data)
       setGeneratedRecipe(data)
     } catch (error) {
       console.error('Error generating recipe:', error)
@@ -51,7 +47,7 @@ export default function GenerateRecipe() {
     if (!generatedRecipe) return
     setIsSaving(true)
     try {
-      const response = await fetch('/api/save-recipe', {
+      const response = await fetch('/api/recipes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +96,7 @@ export default function GenerateRecipe() {
       )}
       {generatedRecipe && (
         <div className="bg-white shadow-md rounded-md p-6">
-          <h2 className="text-2xl font-semibold mb-4">{generatedRecipe.title}</h2>
+          <h2 className="text-2xl font-semibold mb-4">Recipe: {generatedRecipe.id}</h2>
           <h3 className="text-lg font-medium mb-2">Ingredients:</h3>
           <ul className="list-disc list-inside mb-4">
             {generatedRecipe?.ingredients?.map((ingredient, index) => (
